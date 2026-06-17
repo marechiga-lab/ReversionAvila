@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe Ejecutivo: Derecho de Reversión y Riesgos Actuales</title>
+    
+    <!-- Tailwind CSS for Layout Utility -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter Unified Only (Weights from Light to Black) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Definición de la Paleta de Colores Armonizada */
+        :root {
+            --primary-bg: #0B3D66;
+            --card-bg: #ffffff;
+            --text-main: #1f2937; 
+            --text-secondary: #4b5563; 
+            --brand-blue: #0B3D66;
+            --accent: #8FA6BA;
+            --accent-dark: #831419;
+            --light-blue: #CCDCE3;
+            --white: #ffffff;
+            --footer-dark: #072a46;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--white);
+            background-image: radial-gradient(circle at top right, rgba(204, 220, 227, 0.1) 0%, transparent 40%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            scroll-behavior: smooth;
+        }
+
+        /* Armonización de todos los encabezados con la fuente Inter */
+        h1, h2, h3, h4, .serif-font {
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.02em;
+        }
+
+        /* Estilo base para Tarjetas de Despacho */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+            border-top: 5px solid var(--accent);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Custom Cards and UI Blocks */
+        .card-custom {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+            border-left: 5px solid var(--accent);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-alert {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+            border-left: 6px solid var(--accent);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-alert:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Quick Anchor Links */
+        .anchor-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .anchor-link:hover {
+            color: var(--light-blue);
+            border-bottom-color: var(--light-blue);
+        }
+
+        /* Scrollbar customizing */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--footer-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PANTALLA DE LOGEO / PROTECCIÓN POR CONTRASEÑA -->
+    <div id="login-screen" class="w-full max-w-xs p-4 flex flex-col items-center">
+        <div class="w-full bg-white rounded-2xl p-6 shadow-2xl text-center space-y-4">
+            <!-- Entrada de contraseña simple -->
+            <div class="space-y-3">
+                <input type="password" id="passwordField" onkeypress="handleKeyPress(event)" placeholder="Contraseña de acceso" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#0B3D66] text-center transition font-semibold text-sm">
+                <button onclick="checkPassword()" class="w-full bg-[#013968] hover:bg-[#0B3D66] text-white font-extrabold py-3 px-4 rounded-xl transition shadow-md tracking-wider text-sm">
+                    Entrar
+                </button>
+                <p id="errorMessage" class="text-xs text-red-600 font-bold hidden animate-bounce">
+                    Contraseña incorrecta. Intente de nuevo.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL (Oculto inicialmente hasta logeo exitoso) -->
+    <div id="main-content" class="w-full hidden">
+        
+        <!-- Header / Branding & Navigation -->
+        <header class="w-full sticky top-0 px-6 py-4 flex flex-col md:flex-row justify-between items-center bg-[#013968] border-b border-opacity-20 border-white z-50 shadow-md">
+            <div class="flex items-center space-x-3 mb-4 md:mb-0">
+                <span class="text-xs uppercase tracking-widest text-[#CCDCE3] font-extrabold bg-[#0B3D66] px-3 py-1 rounded">Informe Estratégico</span>
+                <span class="text-[#CCDCE3]">|</span>
+                <span class="text-sm font-semibold text-white">Caso Familia Ugarte</span>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="flex space-x-4 md:space-x-6 text-xs md:text-sm font-bold">
+                <a href="#seccion-a" class="anchor-link py-1">Sección A: Reglas</a>
+                <a href="#seccion-b" class="anchor-link py-1">Sección B: Imposibilidad</a>
+                <a href="#seccion-c" class="anchor-link py-1">Sección C: Santander</a>
+                <a href="#conclusiones" class="anchor-link py-1 text-[#CCDCE3]">Plan de Acción</a>
+            </nav>
+        </header>
+
+        <!-- Main Content Container -->
+        <main class="p-4 md:p-8 max-w-7xl mx-auto w-full space-y-12 my-6">
+
+            <!-- Hero / Introducción Principal -->
+            <section class="rounded-2xl p-6 md:p-12 relative overflow-hidden animate-fade-in" style="background-color: var(--footer-dark); box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+                <!-- Abstract background shape -->
+                <div class="absolute top-0 right-0 w-80 h-80 rounded-full opacity-5 pointer-events-none transform translate-x-20 -translate-y-20 bg-white"></div>
+                <div class="absolute bottom-0 left-0 w-96 h-96 rounded-full opacity-5 pointer-events-none transform -translate-x-32 translate-y-32 bg-[#CCDCE3]"></div>
+
+                <div class="relative z-10 space-y-6">
+                    <span class="text-xs md:text-sm uppercase tracking-widest text-[#CCDCE3] font-extrabold inline-flex items-center bg-[#0B3D66] px-3 py-1.5 rounded">
+                        <i class="fa-solid fa-scale-balanced mr-2 text-[#8FA6BA]"></i>Documento de Análisis de Riesgos
+                    </span>
+                    <h1 class="text-3xl md:text-5xl font-black tracking-tight text-white leading-tight">
+                        Análisis de Reversión Contractual y Contingencia Financiera
+                    </h1>
+                    <div class="h-1.5 w-24 bg-[#CCDCE3] rounded-full"></div>
+                    <p class="text-base md:text-lg text-[#CCDCE3] max-w-4xl font-light leading-relaxed">
+                        Evaluación legal exhaustiva sobre la viabilidad actual de recuperar el predio de la Familia Ugarte, el impacto del vencimiento de la licencia de construcción y los escenarios de ejecución previstos ante Banco Santander.
+                    </p>
+                    
+                    <!-- Quick stats summary block -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white border-opacity-10 text-white">
+                        <div class="p-4 bg-[#0B3D66] bg-opacity-40 rounded-xl border border-white border-opacity-5">
+                            <span class="block text-[10px] text-[#8FA6BA] uppercase font-bold tracking-wider">Depósito de Reversión</span>
+                            <span class="text-2xl font-black text-white">$40,000,000 <span class="text-xs font-normal">MXN</span></span>
+                        </div>
+                        <div class="p-4 bg-[#0B3D66] bg-opacity-40 rounded-xl border border-white border-opacity-5">
+                            <span class="block text-[10px] text-[#8FA6BA] uppercase font-bold tracking-wider">Plazo de Devolución</span>
+                            <span class="text-2xl font-black text-white">60 Días <span class="text-xs font-normal">Naturales</span></span>
+                        </div>
+                        <div class="p-4 bg-[#0B3D66] bg-opacity-40 rounded-xl border border-white border-opacity-5">
+                            <span class="block text-[10px] text-[#8FA6BA] uppercase font-bold tracking-wider">Acción Estratégica</span>
+                            <span class="text-2xl font-black text-white">Auditoría <span class="text-xs font-normal">Contable</span></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- SECCIÓN A: REGLAS DE LA REVERSIÓN -->
+            <section id="seccion-a" class="space-y-6 pt-6">
+                <div class="flex items-center space-x-4">
+                    <div class="h-10 w-10 rounded-lg flex items-center justify-center text-white text-base font-black" style="background-color: var(--footer-dark);">A</div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Reglas del Derecho de Reversión</h2>
+                        <p class="text-sm text-[#CCDCE3] font-medium">Condiciones y mecanismos contractuales estipulados para recuperar el inmueble</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Tarjeta 1: Aviso de inconformidad -->
+                    <div class="card-custom p-6 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-4 text-[#013968]">
+                                <div class="p-2 bg-[#CCDCE3] rounded">
+                                    <i class="fa-solid fa-file-signature text-xl"></i>
+                                </div>
+                                <h3 class="font-extrabold text-lg text-gray-900">Aviso de Inconformidad</h3>
+                            </div>
+                            <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+                                El contrato estipula que la vía formal para iniciar el rescate y recuperación del inmueble es mediante la notificación de un <strong>"Aviso de Inconformidad"</strong> formal al desarrollador.
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-100 text-xs text-[#0B3D66] font-bold">
+                            <i class="fa-solid fa-circle-info mr-1"></i> Disparador del proceso legal.
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2: Depósito de Garantía -->
+                    <div class="card-custom p-6 rounded-xl flex flex-col justify-between" style="border-left-color: var(--accent-dark);">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-4 text-[#831419]">
+                                <div class="p-2 bg-red-100 rounded">
+                                    <i class="fa-solid fa-vault text-xl text-[#831419]"></i>
+                                </div>
+                                <h3 class="font-extrabold text-lg text-gray-900">Reembolso Obligatorio</h3>
+                            </div>
+                            <p class="text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
+                                En caso de proceder la reversión, la familia tiene la <strong>obligación estricta e ineludible</strong> de restituir el Depósito Total en Garantía recibido.
+                            </p>
+                            <div class="bg-gray-50 p-3 rounded border border-gray-100">
+                                <span class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold">Monto Acordado</span>
+                                <span class="text-2xl font-black text-[#831419]">$40,000,000 <span class="text-xs text-gray-500 font-normal">MXN</span></span>
+                                <span class="block text-[10px] text-gray-500 mt-1">Plazo máximo: <strong>60 días naturales</strong></span>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-xs text-gray-400 italic">
+                            * Sujeto a plazos perentorios estrictos.
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 3: Compensación por Obras -->
+                    <div class="card-custom p-6 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-4 text-[#013968]">
+                                <div class="p-2 bg-[#CCDCE3] rounded">
+                                    <i class="fa-solid fa-trowel-bricks text-xl"></i>
+                                </div>
+                                <h3 class="font-extrabold text-lg text-gray-900">Descuento de Obras</h3>
+                            </div>
+                            <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+                                Como mecanismo de defensa patrimonial, la familia cuenta con el derecho legítimo de <strong>descontar</strong> de la devolución de los $40 millones el <strong>valor comercial</strong> de las obras o construcciones que el desarrollador ya hubiese edificado en el terreno.
+                            </p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-100 text-xs text-[#0B3D66] font-bold">
+                            <i class="fa-solid fa-calculator mr-1"></i> Requiere avalúo comercial formal.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- SECCIÓN B: IMPOSIBILIDAD DE REVERSIÓN UNILATERAL ACTUAL -->
+            <section id="seccion-b" class="space-y-6 pt-6">
+                <div class="flex items-center space-x-4">
+                    <div class="h-10 w-10 rounded-lg flex items-center justify-center text-white text-base font-black" style="background-color: var(--footer-dark);">B</div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Imposibilidad de Reversión Unilateral Actual</h2>
+                        <p class="text-sm text-[#CCDCE3] font-medium">Candados jurídicos y condiciones operativas que impiden la rescisión inmediata por parte de la familia</p>
+                    </div>
+                </div>
+
+                <!-- Main timeline & facts -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Bloque 1: El hito de la licencia -->
+                    <div class="lg:col-span-2 card-custom p-6 md:p-8 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4 border-b pb-4 border-gray-100">
+                                <h3 class="font-extrabold text-xl text-gray-900 flex items-center tracking-tight">
+                                    <i class="fa-solid fa-calendar-check text-[#013968] mr-3"></i>El Hito Legal del 31 de Enero de 2024
+                                </h3>
+                                <span class="bg-[#CCDCE3] text-[#013968] text-xs font-bold px-3 py-1 rounded-full">Fecha de Gracia</span>
+                            </div>
+                            <p class="text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
+                                La licencia de construcción se obtuvo formalmente el <strong>31 de enero de 2024</strong>. Esta fecha resultó clave porque cayó justo dentro del periodo de gracia de 45 días acordado en el convenio modificatorio, cuyo vencimiento final estaba programado para el <strong>1 de febrero de 2024</strong>.
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
+                                <div>
+                                    <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider">Obtención de Licencia</span>
+                                    <span class="text-sm font-extrabold text-[#013968]">31 de Enero, 2024</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider">Límite del Convenio</span>
+                                    <span class="text-sm font-extrabold text-[#013968]">01 de Febrero, 2024</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-red-700 font-bold mt-4">
+                            <i class="fa-solid fa-ban mr-1"></i> Por lo tanto, la causal de incumplimiento por plazos quedó legalmente invalidada.
+                        </p>
+                    </div>
+
+                    <!-- Bloque 2: Las limitaciones actuales -->
+                    <div class="card-custom p-6 rounded-xl flex flex-col justify-between" style="border-left-color: var(--accent);">
+                        <div class="space-y-4">
+                            <h3 class="font-extrabold text-lg text-gray-900">Restricciones de Acción</h3>
+                            
+                            <div class="space-y-3">
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-circle-xmark text-red-600 mt-1"></i>
+                                    <p class="text-xs text-[var(--text-secondary)]">
+                                        El hecho de que la obra no se termine en tiempo <strong>no es una causal válida</strong> de reversión unilateral bajo los acuerdos actuales.
+                                    </p>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fa-solid fa-handshake text-[#013968] mt-1"></i>
+                                    <p class="text-xs text-[var(--text-secondary)]">
+                                        La única vía jurídica viable hoy en día para que la familia recupere el terreno es mediante un <strong>"Acuerdo Mutuo"</strong> de voluntades con el desarrollador.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 p-3 bg-blue-50 border border-blue-100 rounded text-xs text-[#013968] font-semibold leading-relaxed">
+                            <i class="fa-solid fa-lock mr-1"></i> <strong>Candado de Gravamen:</strong> Mientras el terreno garantice el crédito bancario, la familia no puede solicitar la reversión sin la autorización expresa y por escrito de <strong>Banco Santander</strong>.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- SECCIÓN C: ASPECTOS A CONSIDERAR FRENTE A SANTANDER -->
+            <section id="seccion-c" class="space-y-6 pt-6">
+                <div class="flex items-center space-x-4">
+                    <div class="h-10 w-10 rounded-lg flex items-center justify-center text-white text-base font-black bg-[#8FA6BA]">C</div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-black text-[#CCDCE3] tracking-tight">Aspectos a considerar frente a Santander</h2>
+                        <p class="text-sm text-[#CCDCE3] font-medium">Análisis preventivo y técnico sobre el estado del crédito de la asamblea</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Tarjeta Alerta 1: Causal de vencimiento -->
+                    <div class="card-alert p-6 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-4 text-[#0B3D66]">
+                                <div class="p-2 bg-gray-100 rounded">
+                                    <i class="fa-solid fa-file-invoice text-xl text-[#0B3D66]"></i>
+                                </div>
+                                <h3 class="font-extrabold text-lg text-gray-900">Estatus y renovación de la licencia</h3>
+                            </div>
+                            <p class="text-sm text-gray-800 leading-relaxed font-medium">
+                                La Licencia de Construcción se encuentra actualmente vencida. Este hecho formal no representa la pérdida o devolución directa del predio a la familia Ugarte, pero introduce un aspecto regulatorio clave:
+                            </p>
+                            <div class="mt-4 p-4 bg-gray-50 border-l-4 border-[#8FA6BA] rounded-r text-xs text-gray-950 font-bold leading-relaxed">
+                                <i class="fa-solid fa-circle-info mr-1 text-[#0B3D66]"></i> La no renovación de este permiso faculta contractualmente a Santander para evaluar el vencimiento anticipado de los fondos dispuestos.
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-4 font-medium">
+                            * Se requiere mantener actualizados los permisos obligatorios vigentes del predio.
+                        </p>
+                    </div>
+
+                    <!-- Tarjeta Alerta 2: Ejecución y remate -->
+                    <div class="card-alert p-6 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-4 text-[#0B3D66]">
+                                <div class="p-2 bg-gray-100 rounded">
+                                    <i class="fa-solid fa-clock text-xl text-[#0B3D66]"></i>
+                                </div>
+                                <h3 class="font-extrabold text-lg text-gray-900">Procedimientos contractuales ordinarios</h3>
+                            </div>
+                            <p class="text-sm text-gray-800 leading-relaxed mb-4 font-medium">
+                                En caso de no gestionarse la prórroga o renovación de la licencia tras un requerimiento por escrito en el término previsto (usualmente 15 días), el contrato de fideicomiso estipula los siguientes pasos previstos:
+                            </p>
+                            <ul class="space-y-2 text-xs text-gray-700 font-semibold">
+                                <li class="flex items-center space-x-2">
+                                    <i class="fa-solid fa-chevron-right text-[#8FA6BA]"></i>
+                                    <span>Exigibilidad total del crédito por saldo insoluto.</span>
+                                </li>
+                                <li class="flex items-center space-x-2">
+                                    <i class="fa-solid fa-chevron-right text-[#8FA6BA]"></i>
+                                    <span>Procedimientos ordinarios de cobro judicial de las garantías del fideicomiso.</span>
+                                </li>
+                                <li class="flex items-center space-x-2">
+                                    <i class="fa-solid fa-chevron-right text-[#8FA6BA]"></i>
+                                    <span>Ejecución del predio aportado en garantía para recuperación de capital.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-4 p-2 bg-[#CCDCE3] text-[#0B3D66] rounded text-xs font-black text-center uppercase tracking-wider">
+                            Análisis preventivo de garantías
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- PLAN DE ACCIÓN / CONCLUSIÓN -->
+            <section id="conclusiones" class="rounded-2xl p-6 md:p-10 border border-opacity-20 border-[#CCDCE3]" style="background-color: var(--footer-dark);">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-4 max-w-3xl">
+                        <h2 class="text-2xl md:text-3xl font-black text-white flex items-center tracking-tight">
+                            <i class="fa-solid fa-shield-halved text-[#8FA6BA] mr-3"></i>Estrategia Recomendada de Defensa
+                        </h2>
+                        <p class="text-sm text-[#CCDCE3] leading-relaxed font-light">
+                            Para salvaguardar el terreno y neutralizar la contingencia con Banco Santander, es indispensable emprender acciones conjuntas inmediatas:
+                        </p>
+                        <ul class="space-y-2 text-xs md:text-sm text-gray-300 font-medium">
+                            <li class="flex items-start">
+                                <span class="text-[#8FA6BA] mr-2 font-bold">•</span>
+                                <span><strong>Auditoría Contable al Desarrollador:</strong> Iniciar un proceso formal de auditoría contable y financiera rigurosa para mapear, identificar y auditar los flujos de caja reales del proyecto, el destino de los recursos y el estado de la solvencia real del desarrollo.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-[#8FA6BA] mr-2 font-bold">•</span>
+                                <span><strong>Mapeo de Valorización:</strong> Generar un avalúo certificado del estado real de la obra que determine las compensaciones deducibles.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-[#8FA6BA] mr-2 font-bold">•</span>
+                                <span><strong>Comunicación Alineada:</strong> Priorizar la búsqueda de acuerdos bilaterales de común acuerdo antes de emprender cualquier acción procesal independiente.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="text-center md:text-right flex-shrink-0">
+                        <span class="inline-block bg-[#0B3D66] text-[#CCDCE3] text-xs font-black px-5 py-3 rounded-xl uppercase tracking-widest shadow-md">
+                            <i class="fa-solid fa-clock-rotate-left mr-2"></i>Atención Recomendada
+                        </span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Branding Card con Logo (Únicamente aquí al final del documento) -->
+            <div class="card p-10 flex flex-col items-center justify-center text-center mt-12">
+                <img src="logo_despacho.png" alt="Ramírez Palos & Aréchiga Temores" class="max-h-24 w-auto object-contain mb-4" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div style="display:none;" class="text-center">
+                    <div class="text-xl font-black uppercase tracking-[0.2em]" style="color: var(--brand-blue);">
+                        Ramírez Palos & Aréchiga Temores
+                    </div>
+                </div>
+                <div class="text-xs font-bold tracking-[0.5em] opacity-70 uppercase mt-2" style="color: var(--text-main);">
+                    ABOGADOS | DERECHO INMOBILIARIO
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 text-center text-[10px] md:text-xs opacity-60 pb-12" style="color: var(--light-blue);">
+                <p class="mb-1 font-bold uppercase tracking-widest text-white">Documento Confidencial | Fideicomiso Avila 2026</p>
+                <p>© Ramírez Palos & Aréchiga Temores. Todos los derechos reservados.</p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Password Script Logic -->
+    <script>
+        function checkPassword() {
+            const password = document.getElementById('passwordField').value;
+            const error = document.getElementById('errorMessage');
+            
+            if (password === 'VILLA') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                // Cambiamos el estilo del body para permitir scroll y padding de contenido
+                document.body.style.display = 'block';
+                window.scrollTo(0, 0);
+            } else {
+                error.style.display = 'block';
+                document.getElementById('passwordField').value = '';
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        }
+    </script>
+</body>
+</html>
